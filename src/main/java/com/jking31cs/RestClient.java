@@ -1,5 +1,6 @@
 package com.jking31cs;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jking31cs.annotations.CouchDB;
 
@@ -22,6 +23,7 @@ public class RestClient {
     public RestClient(String baseURL) {
         this.baseURL = baseURL;
         objectMapper = new ObjectMapper();
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
     private String createDbURL(String db) {
@@ -72,7 +74,10 @@ public class RestClient {
         HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
         conn.setUseCaches(false);
         conn.setRequestMethod("PUT");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("Accept", "*/*");
         conn.setDoOutput(true);
+        conn.setDoInput(true);
         OutputStream os = conn.getOutputStream();
         os.write(objectMapper.writeValueAsBytes(object));
         os.flush();
